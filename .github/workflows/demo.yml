@@ -25,9 +25,32 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Upload artifacts  # uploading build artifacts
+        uses: actions/upload-artifact@v3  # action to upload artifacts
+        with:                     # parameters for the upload
+          name: dist-files  # name of the artifact, can be anything, it is used to identify the artifact in the GitHub UI
+          path: |       # paths to the files to upload, the files will be compressed and stored in the artifac
+            dist
+            package.json
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy
         run: echo "Deploying..."
+
+
+#Los artefactos en GitHub Actions son archivos o colecciones de archivos producidos durante una ejecución de flujo de trabajo que se pueden almacenar y compartir entre trabajos o después de completar el flujo de trabajo. Estos artefactos pueden contener datos valiosos como resultados de pruebas, informes de cobertura de código, archivos binarios y más.
+#Tipos de artefactos:
+# Archivos de registro: para depuración y análisis de problemas
+# Resultados de pruebas: para evaluar el rendimiento y la calidad del código
+# Archivos binarios: para distribuir aplicaciones o bibliotecas compiladas
+# Informes y documentación: para compartir información y resultados
+# Uso de artefactos:
+# Compartir archivos entre trabajos: en el mismo flujo de trabajo o entre diferentes flujos de trabajo
+# Almacenar archivos para su posterior uso: después de completar un flujo de trabajo o para futuras referencias
+# Crear versiones y lanzamientos: con artefactos asociados para distribuir aplicaciones o bibliotecas
+# Ventajas:
+# Mejora la colaboración: al compartir archivos y resultados entre miembros del equipo
+# Optimiza el flujo de trabajo: al automatizar la generación y distribución de artefactos
+# Aumenta la eficiencia: al reducir el tiempo y esfuerzo necesario para generar y compartir archivos

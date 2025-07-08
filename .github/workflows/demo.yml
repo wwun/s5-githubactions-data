@@ -55,6 +55,9 @@ jobs:
           name: dist-files  # name of the artifact to download, must match the name used in the upload step
       - name: Output contents
         run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}" # this will output the filename of the built JS file, which was passed from the build job
+        # needs is used to reference the outputs of the build job, specifically the script-file output, it is a context variable that allows access to the outputs of a job that this job depends on, there are different context and objects variables such as github, runner, env, secrets, and needs
       - name: Deploy
         run: echo "Deploying..."
 

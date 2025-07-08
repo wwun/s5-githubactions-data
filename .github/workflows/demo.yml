@@ -26,7 +26,7 @@ jobs:
       - name: Build website
         run: npm run build
       - name: Upload artifacts  # uploading build artifacts
-        uses: actions/upload-artifact@v3  # action to upload artifacts
+        uses: actions/upload-artifact@v4  # action to upload artifacts
         with:                     # parameters for the upload
           name: dist-files  # name of the artifact, can be anything, it is used to identify the artifact in the GitHub UI
           path: |       # paths to the files to upload, the files will be compressed and stored in the artifac

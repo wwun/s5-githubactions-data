@@ -9,8 +9,15 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Install dependencies
-        run: npm ci
+      - name: Cache dependencies  # caching dependencies to speed up the workflow, this will cache the node_modules directory and the package-lock.json file
+        # this will cache the ~/.npm directory, which is where npm stores its cache files,
+        # this will speed up the workflow by avoiding downloading the same dependencies again
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # this will create a cache key based on the package-lock.json file, so if the file changes, the cache will be invalidated and the dependencies will be reinstalled
+      - name: Install dependencies  # install dependencies using npm ci, this will install the dependencies from the package-lock.json file
+        run: npm ci # it will use the npm folder cached in the previous step, if it exists, otherwise it will install the dependencies from the package-lock.json file
       - name: Lint code
         run: npm run lint
       - name: Test code
@@ -26,6 +33,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies  # caching dependencies, consider a centralized cache for all jobs, this will cache the node_modules directory and the package-lock.json file, but this lines must be added here to establish the cache in this job
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Build website
@@ -105,3 +117,10 @@ jobs:
 # publish: es el id del paso que generó el output. En este caso, el paso con el id publish es el que ejecuta el comando find y escribe el output en $GITHUB_OUTPUT.
 # outputs: se refiere a los outputs generados por el paso publish.
 # script-file: es el nombre del output específico que se generó en el paso publish
+
+
+# La expresión hashFiles genera un hash SHA-256 del contenido de los archivos especificados. En este caso, busca todos los archivos package-lock.json en el repositorio (debido al patrón **/package-lock.json) y genera un hash basado en su contenido.
+# ¿Por qué se utiliza un hash?
+# Se utiliza un hash porque permite detectar cambios en los archivos package-lock.json. Si el contenido de estos archivos cambia, el hash también cambiará, lo que indica que la caché debe ser actualizada.
+# ¿Cómo se utiliza la clave?
+# La clave deps-node-modules-{{ hashFiles('**/package-lock.json') }} se utiliza para almacenar y recuperar la caché de dependencias de Node.js. Si la clave coincide con una caché existente, GitHub Actions utilizará la caché existente. Si la clave no coincide con ninguna caché existente, se creará una nueva caché
